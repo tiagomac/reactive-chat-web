@@ -1,0 +1,78 @@
+<script src="/socket.io/socket.io.js"></script>
+<script src="/javascripts/strophe.js"></script>
+<script src="/javascripts/strophe.register.js"></script>
+<script>
+  myUser = '';	
+  var socket = io.connect('104.154.69.20:3000');
+  var BOSH_SERVICE = 'http://45.55.164.136:5280/http-bind';
+  var connection = null;
+ 
+  var notify = function(data) {
+    var notify = document.getElementById(data.el);
+    if (notify) {
+      notify.textContent = data.msg;
+    }
+  };
+
+  socket.on('notify-offlines', function(nome) {
+    var opts = {el: 'notify_' + nome
+              , msg: 'Offline'};
+			notify(opts);
+  });
+
+  socket.on('new-message', function(data) {
+    if( $("#tr_"+data.nome).html() != undefined){
+		var opts = {el: 'notify_' + data.nome
+				  , msg: 'Mensagem'};
+		notify(opts);
+		var chat = document.getElementById('chat_' + data.nome);
+		chat.href = '/chat/' + data.nome+ '?sala=' + data.sala;
+	}else{
+		$('#onlines').append("<tr id='tr_"+data.nome+"'><td>"+data.nome+"</td><td id='notify_"+data.nome+"'>Mensagem</td><td><a href='/chat/"+data.nome+"' id='chat_"+data.nome+"'>Conversar</a></td></tr>");
+	}
+	
+  });
+  
+  socket.on('notify-onlines', function(online) {
+	
+	if (online === myUser){
+		return;
+	}else {
+		if( $("#tr_"+online).html() != undefined){
+			var opts = {el: 'notify_' + online
+              , msg: 'Online'};
+			notify(opts);
+		}
+	}
+  });
+  
+  var contatos = [];
+  
+  socket.on('connect', function() {
+	var user = '<%-usuario.nome%>';
+	myUser = user;
+	socket.emit('addUser', user, '');
+	
+	 connection = new Strophe.Connection(BOSH_SERVICE);
+     connection.connect("<%-usuario.nome%>@saturn",
+                            "123456");
+   
+   });
+   
+   $(function() {	
+	$.ajax({ 
+			type: 'GET', 
+			url: "http://localhost:3000/listaContatos", 
+			dataType: 'json', 
+			crossDomain: true, 
+			async: false, 
+			success: function (data) { 
+				contatos = data;
+			} 
+	});
+	$( "#contato" ).autocomplete({
+	  source: contatos
+	});  
+  });
+  
+</script>

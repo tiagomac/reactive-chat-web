@@ -1,0 +1,34 @@
+<% include ../topo %>
+
+<div class="container">
+<br>
+<form action="/contato" class="form-inline" method="post">
+<div class="form-group">
+<input type="text" name="contato[nome]" id="contato" class="form-control" placeholder="Nome do contato"/>
+<button class="btn btn-primary" type="submit">Cadastrar</button>
+</div>
+</form>
+
+<br>
+<table class="table" style="width:500px;">
+	<thead>
+		<tr>
+			<th style="width:300px;">Nome</th>
+			<th style="width:100px;">Status</th>
+			<th style="width:100px;">Acao</th>
+		</tr>
+	</thead>
+	<tbody id="onlines">
+	<% contatos.forEach(function(contato) { %>
+		<tr id='tr_<%- contato.nome %>'>
+			<td><%- contato.nome %></td>
+			<td id='notify_<%- contato.nome %>'>Offline</td>
+			<td><a href="/chat/<%- contato.nome %>" id='chat_<%- contato.nome %>'>Conversar</a></td>
+		</tr>
+	<% }) %>
+	</tbody>
+</table>
+</div>
+
+<% include notify_script %>
+<% include ../footer %>

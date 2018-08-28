@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Telegram Caixa</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+	<link href="/stylesheets/init.css" rel="stylesheet">
+	<link href="/stylesheets/jquery-ui.css" rel="stylesheet">
+	
+	<script src="/javascripts/bootstrap.min.js"></script>
+	<script src="/javascripts/jquery-2.1.4.js"></script>
+	<script src="/javascripts/jquery-ui.js"></script>
+	<script>
+		function sair(){
+			socket.emit('closeConnection');
+			connection.disconnect();
+			window.location.href = '/sair';
+		}
+  	</script>
+  </head>
+<body>

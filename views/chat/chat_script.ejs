@@ -1,0 +1,58 @@
+<script src="/socket.io/socket.io.js"></script>
+<script src="/javascripts/strophe.js"></script>
+<script>
+  var socket = io.connect('104.154.69.20:3000');
+  var BOSH_SERVICE = 'http://45.55.164.136:5280/http-bind';
+  var connection = null;
+  var contato = '';
+  var sala;
+  function gerarNomeSala(nome1, nome2){
+		if( nome1 > nome2){
+			return nome2 + nome1;
+		}else{
+			return nome1 + nome2;
+		}
+  }
+	
+  if( '<%- sala %>' != '' ){
+		sala = '<%- sala %>';	
+  }else{
+		sala = gerarNomeSala('<%- usuario.nome %>','<%- contato %>');
+  }
+
+  socket.emit('join', sala, '<%- contato %>', '<%- usuario.nome %>');
+  
+  socket.on('send-client', function (msg) {
+    var chat = document.getElementById('chat');
+    chat.innerHTML += "<li class='list-group-item'>" + msg + "</li>";
+	var element = document.getElementById('chat');
+    element.scrollTop = element.scrollHeight - element.clientHeight;
+  });
+  
+  var enviar = function() {
+    var msg = document.getElementById('mensagem');
+	
+	var data = {
+		nome : '<%- usuario.nome %>',
+		sala : gerarNomeSala('<%- usuario.nome %>','<%- contato %>'),
+		contato : '<%- contato %>'
+	};
+    socket.emit('send-server', msg.value, data);
+         
+      var msgXMPP = $msg({to: '<%- contato %>@saturn', type: 'chat'});
+      msgXMPP.c('body', {}, msg.value);
+      connection.send(msgXMPP.tree());
+      
+    msg.value = '';
+    msg.focus();
+  };
+  
+  socket.on('connect', function() {
+	var user = '<%-usuario.nome%>';
+	myUser = user;
+	socket.emit('addUser', user, '');
+	connection = new Strophe.Connection(BOSH_SERVICE);
+    connection.connect("<%-usuario.nome%>@saturn",
+                            "123456");
+  });
+</script>
